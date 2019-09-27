@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const joi = require('@hapi/joi');
 const genreModule = require('../mongodb/genre');
 
 router.get('/test', (req,res) => {
@@ -9,7 +10,7 @@ router.get('/test', (req,res) => {
 //APIs
 router.post('/newgenre', async (req,res) => {
 
-    let {error} = genreModule.joiValidation(req.body);
+    let {error} = joiValidation(req.body);
     if (error){
         res.status(404).send(error.details[0].message)
     }
@@ -23,7 +24,7 @@ router.post('/newgenre', async (req,res) => {
 });
 
 router.put('/updategenre/:id', async(req,res) => {
-    let {error} = genreModule.joiValidation(req.body);
+    let {error} = joiValidation(req.body);
     if(error){
         res.status(404).send(error.details[0].message);
     }
@@ -39,13 +40,16 @@ router.put('/updategenre/:id', async(req,res) => {
 });
 
 router.delete('/deletegenre/:id', async (req,res) => {
-    let {error} = genreModule.joiValidation(req.body);
-    if(error){
-        res.status(404).send(error.details[0].message);
-    }
-    else{
         genreModule.genreModel.findByIdAndRemove(req.params.id, () => console.log('Entry removed'));
         res.send("Deleted");
-    }
-});
+    });
+
+//Joi validation    
+function joiValidation(message){
+    let Schema = joi.object().keys({
+        name: joi.string().min(3).required()
+    });
+
+    return Schema.validate(message);
+}
 module.exports = router;
