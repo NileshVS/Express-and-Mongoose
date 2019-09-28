@@ -40,13 +40,19 @@ router.put('/updategenre/:id', async(req,res) => {
 });
 
 router.delete('/deletegenre/:id', async (req,res) => {
-        genreModule.genreModel.findByIdAndRemove(req.params.id, () => console.log('Entry removed'));
-        res.send("Deleted");
+        try{let userid = await genreModule.genreModel.findByIdAndRemove(req.params.id, () => console.log('Entry removed'));
+        if(!userid){
+            res.status(404).send("Wrong ID");
+        }
+        res.send("Deleted");}
+        catch(ex){
+            res.send(ex.message);
+        }
     });
 
 //Joi validation    
 function joiValidation(message){
-    let Schema = joi.object().keys({
+    let Schema = joi.object({
         name: joi.string().min(3).required()
     });
 
