@@ -1,13 +1,15 @@
 const express = require('express');
 const app = express();
-const router = require('./routes/genre.routes');
+const genreRouter = require('./routes/genre.routes');
+const movieRouter = require('./routes/movie.routes');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 
 //middlewares
 app.use(express.json());
 app.use(morgan('tiny'));
-app.use('/api', router);
+app.use('/api', [genreRouter, movieRouter]);
+// app.use('/a')
 
 //MongoDB connection
 
